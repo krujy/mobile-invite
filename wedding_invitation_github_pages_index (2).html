@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>모바일 청첩장</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      background: #f7f5f2;
+      color: #333;
+    }
+    a { text-decoration: none; color: inherit; }
+    button {
+      border: none;
+      background: none;
+      font: inherit;
+      cursor: pointer;
+    }
+    .wrap {
+      max-width: 480px;
+      margin: 0 auto;
+      background: #fff;
+      min-height: 100vh;
+      box-shadow: 0 0 20px rgba(0,0,0,0.08);
+    }
+    .hero {
+      position: relative;
+      height: 580px;
+      background: url('https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.28);
+    }
+    .hero-text {
+      position: absolute;
+      left: 50%;
+      bottom: 52px;
+      transform: translateX(-50%);
+      width: calc(100% - 48px);
+      text-align: center;
+      color: white;
+      z-index: 1;
+    }
+    .hero-text .sub {
+      font-size: 13px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      opacity: 0.9;
+      margin-bottom: 12px;
+    }
+    .hero-text h1 {
+      margin: 0;
+      font-size: 34px;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+    .hero-text p {
+      margin: 14px 0 0;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+    .section {
+      padding: 42px 24px;
+    }
+    .section-title {
+      text-align: center;
+      font-size: 24px;
+      margin: 0 0 22px;
+      font-weight: 700;
+      color: #222;
+    }
+    .message {
+      text-align: center;
+      line-height: 2;
+      font-size: 16px;
+      color: #555;
+    }
+    .dday {
+      margin: 0 24px;
+      padding: 26px 20px;
+      border-radius: 24px;
+      background: #f8ecee;
+      text-align: center;
+    }
+    .dday .label {
+      font-size: 14px;
+      color: #777;
+    }
+    .dday .count {
+      margin-top: 8px;
+      font-size: 38px;
+      font-weight: 800;
+      color: #222;
+    }
+    .dday .date {
+      margin-top: 8px;
+      font-size: 15px;
+      color: #666;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .card {
+      border: 1px solid #ececec;
+      border-radius: 22px;
+      padding: 20px 16px;
+      background: #fff;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+    }
+    .person-role {
+      font-size: 13px;
+      color: #888;
+      text-align: center;
+    }
+    .person-name {
+      margin-top: 6px;
+      font-size: 20px;
+      font-weight: 700;
+      text-align: center;
+    }
+    .button-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .btn-dark {
+      background: #222;
+      color: white;
+    }
+    .btn-light {
+      border: 1px solid #ddd;
+      color: #333;
+      background: white;
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .gallery img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 18px;
+      display: block;
+      cursor: pointer;
+    }
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.86);
+      z-index: 9999;
+      padding: 20px;
+    }
+    .lightbox.show {
+      display: flex;
+    }
+    .lightbox img {
+      max-width: 100%;
+      max-height: 78vh;
+      border-radius: 18px;
+      object-fit: contain;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.14);
+      color: white;
+      font-size: 28px;
+      line-height: 1;
+    }
+    .lightbox-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.14);
+      color: white;
+      font-size: 30px;
+      line-height: 1;
+    }
+    .lightbox-nav.left { left: 16px; }
+    .lightbox-nav.right { right: 16px; }
+    .lightbox-counter {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      font-size: 14px;
+      background: rgba(255,255,255,0.12);
+      padding: 8px 12px;
+      border-radius: 999px;
+    }
+    .location-box {
+      border: 1px solid #ececec;
+      border-radius: 22px;
+      padding: 24px 18px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+    }
+    .hall-name {
+      text-align: center;
+      font-size: 18px;
+      font-weight: 700;
+      color: #222;
+    }
+    .address {
+      text-align: center;
+      font-size: 15px;
+      color: #666;
+      margin-top: 8px;
+      line-height: 1.7;
+    }
+    .map-placeholder {
+      margin-top: 18px;
+      background: #f3f3f3;
+      border-radius: 18px;
+      padding: 40px 16px;
+      text-align: center;
+      color: #888;
+      font-size: 14px;
+    }
+    .info-list {
+      margin-top: 16px;
+      font-size: 15px;
+      color: #555;
+      line-height: 1.9;
+    }
+    .info-list strong {
+      color: #222;
+    }
+    .full-btn {
+      width: 100%;
+      margin-top: 18px;
+      background: #e88d9b;
+      color: white;
+      padding: 14px 16px;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .account-box {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .account-card {
+      border: 1px solid #ececec;
+      border-radius: 20px;
+      padding: 18px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+    }
+    .account-role {
+      font-size: 13px;
+      color: #888;
+    }
+    .account-number {
+      margin-top: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.8;
+      word-break: break-all;
+    }
+    .copy-btn {
+      width: 100%;
+      margin-top: 14px;
+      border: 1px solid #ddd;
+      border-radius: 14px;
+      padding: 12px 14px;
+      background: white;
+      font-size: 14px;
+      font-weight: 700;
+      color: #333;
+    }
+    .rsvp {
+      background: #222;
+      color: white;
+      border-radius: 24px;
+      text-align: center;
+      margin: 0 24px 44px;
+      padding: 28px 18px;
+    }
+    .rsvp p {
+      margin: 8px 0 0;
+      color: rgba(255,255,255,0.75);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+    .rsvp-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .btn-white {
+      background: white;
+      color: #222;
+      border-radius: 14px;
+      padding: 13px 12px;
+      font-weight: 700;
+    }
+    .btn-outline-white {
+      background: transparent;
+      color: white;
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 14px;
+      padding: 13px 12px;
+      font-weight: 700;
+    }
+    .footer {
+      padding: 0 24px 40px;
+      text-align: center;
+      font-size: 13px;
+      color: #999;
+    }
+    @media (max-width: 420px) {
+      .hero { height: 520px; }
+      .hero-text h1 { font-size: 28px; }
+      .section-title { font-size: 22px; }
+      .gallery img { height: 150px; }
+      .lightbox-nav {
+        width: 38px;
+        height: 38px;
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="hero-text">
+        <div class="sub">Wedding Invitation</div>
+        <h1>이규원 ♥ 박정민</h1>
+        <p>2026년 9월 12일 토요일 오후 1시 40분</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="message">
+        서로의 삶에 따뜻한 사람이 되어<br />
+        같은 길을 함께 걸어가려 합니다.<br />
+        소중한 날, 귀한 걸음으로 함께해 주시면<br />
+        더없는 기쁨이겠습니다.
+      </div>
+    </section>
+
+    <section class="dday">
+      <div class="label">결혼식까지</div>
+      <div class="count" id="dday">D-000</div>
+      <div class="date">2026년 9월 12일 토요일 오후 1시 40분</div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">신랑 · 신부</h2>
+      <div class="grid-2">
+        <div class="card">
+          <div class="person-role">신랑</div>
+          <div class="person-name">이규원</div>
+          <div class="button-row">
+            <a class="btn btn-dark" href="tel:010-9733-2982">전화</a>
+            <a class="btn btn-light" href="sms:010-9733-2982">문자</a>
+          </div>
+        </div>
+        <div class="card">
+          <div class="person-role">신부</div>
+          <div class="person-name">박정민</div>
+          <div class="button-row">
+            <a class="btn btn-dark" href="tel:010-4843-2435">전화</a>
+            <a class="btn btn-light" href="sms:010-4843-2435">문자</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">갤러리</h2>
+      <div class="gallery" id="gallery">
+        <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80" alt="gallery1" data-index="0" />
+        <img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=800&q=80" alt="gallery2" data-index="1" />
+        <img src="https://images.unsplash.com/photo-1529636798458-92182e662485?auto=format&fit=crop&w=800&q=80" alt="gallery3" data-index="2" />
+        <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=800&q=80" alt="gallery4" data-index="3" />
+      </div>
+    </section>
+
+    <div class="lightbox" id="lightbox">
+      <button class="lightbox-close" onclick="closeLightbox()">×</button>
+      <button class="lightbox-nav left" onclick="prevImage()">‹</button>
+      <img id="lightbox-image" src="" alt="확대 이미지" />
+      <button class="lightbox-nav right" onclick="nextImage()">›</button>
+      <div class="lightbox-counter" id="lightbox-counter"></div>
+    </div>
+
+    <section class="section">
+      <h2 class="section-title">오시는 길</h2>
+      <div class="location-box">
+        <div class="hall-name">강동KDW</div>
+        <div class="address">강동KDW</div>
+        <div class="map-placeholder">카카오맵 / 네이버지도 링크 연결 영역</div>
+        <div class="info-list">
+          <div><strong>지하철</strong> 시청역 3번 출구 도보 5분</div>
+          <div><strong>주차</strong> 웨딩홀 지하주차장 2시간 무료</div>
+        </div>
+        <button class="full-btn" onclick="openMap()">카카오맵으로 길찾기</button>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">마음 전하실 곳</h2>
+      <div class="account-box">
+        <div class="account-card">
+          <div class="account-role">신랑측</div>
+          <div class="account-number">국민은행 123456-78-123456 이규원</div>
+          <button class="copy-btn" onclick="copyText('국민은행 123456-78-123456 이규원')">계좌번호 복사</button>
+        </div>
+        <div class="account-card">
+          <div class="account-role">신부측</div>
+          <div class="account-number">신한은행 110-123-456789 박정민</div>
+          <button class="copy-btn" onclick="copyText('신한은행 110-123-456789 박정민')">계좌번호 복사</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="rsvp">
+      <h2 style="margin:0; font-size:24px;">참석 의사 전달</h2>
+      <p>아래 버튼을 눌러 참석 여부를 알려주세요.</p>
+      <div class="rsvp-buttons">
+        <button class="btn-white" onclick="alert('참석 폼 링크로 연결되도록 변경 가능')">참석할게요</button>
+        <button class="btn-outline-white" onclick="alert('불참 폼 링크로 연결되도록 변경 가능')">참석이 어려워요</button>
+      </div>
+    </section>
+
+    <div class="footer">모바일 청첩장 샘플 페이지</div>
+  </div>
+
+  <script>
+    const weddingDate = new Date('2026-09-12T13:40:00');
+    const now = new Date();
+    const diff = weddingDate.getTime() - now.getTime();
+    const dday = Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+    document.getElementById('dday').textContent = 'D-' + dday;
+
+    function openMap() {
+      window.open('https://map.kakao.com/link/search/강동KDW', '_blank');
+    }
+
+    async function copyText(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        alert('계좌번호가 복사되었습니다.');
+      } catch (e) {
+        alert('복사에 실패했습니다. 직접 길게 눌러 복사해주세요.');
+      }
+    }
+
+    const galleryImages = Array.from(document.querySelectorAll('#gallery img')).map(img => img.src);
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImage = document.getElementById('lightbox-image');
+    const lightboxCounter = document.getElementById('lightbox-counter');
+    let currentImageIndex = 0;
+    let touchStartX = 0;
+
+    function renderLightbox() {
+      lightboxImage.src = galleryImages[currentImageIndex];
+      lightboxCounter.textContent = (currentImageIndex + 1) + ' / ' + galleryImages.length;
+    }
+
+    function openLightbox(index) {
+      currentImageIndex = index;
+      renderLightbox();
+      lightbox.classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('show');
+      document.body.style.overflow = '';
+    }
+
+    function prevImage() {
+      currentImageIndex = (currentImageIndex - 1 + galleryImages.length) % galleryImages.length;
+      renderLightbox();
+    }
+
+    function nextImage() {
+      currentImageIndex = (currentImageIndex + 1) % galleryImages.length;
+      renderLightbox();
+    }
+
+    document.querySelectorAll('#gallery img').forEach((img, index) => {
+      img.addEventListener('click', () => openLightbox(index));
+    });
+
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) closeLightbox();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (!lightbox.classList.contains('show')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') prevImage();
+      if (e.key === 'ArrowRight') nextImage();
+    });
+
+    lightbox.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].clientX;
+    }, { passive: true });
+
+    lightbox.addEventListener('touchend', (e) => {
+      const touchEndX = e.changedTouches[0].clientX;
+      const diffX = touchEndX - touchStartX;
+      if (Math.abs(diffX) < 40) return;
+      if (diffX > 0) prevImage();
+      else nextImage();
+    }, { passive: true });
+  </script>
+</body>
+</html>
