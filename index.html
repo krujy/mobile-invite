@@ -425,7 +425,7 @@
       <div class="location-box">
         <div class="hall-name">강동KDW</div>
         <div class="address">강동KDW</div>
-        <div class="map-placeholder">카카오맵 / 네이버지도 링크 연결 영역</div>
+        <div id="map" style="width:100%;height:260px;border-radius:18px;margin-top:18px;"></div>
         <div class="info-list">
           <div><strong>지하철</strong> 시청역 3번 출구 도보 5분</div>
           <div><strong>주차</strong> 웨딩홀 지하주차장 2시간 무료</div>
@@ -459,9 +459,10 @@
       </div>
     </section>
 
-    <div class="footer">모바일 청첩장 샘플 페이지</div>
+    
   </div>
 
+  <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=YOUR_KAKAO_APP_KEY"></script>
   <script>
     const weddingDate = new Date('2026-09-12T13:40:00');
     const now = new Date();
@@ -471,6 +472,19 @@
 
     function openMap() {
       window.open('https://map.kakao.com/link/search/강동KDW', '_blank');
+    }
+
+    function initMap() {
+      const container = document.getElementById('map');
+      const options = {
+        center: new kakao.maps.LatLng(37.530, 127.123),
+        level: 3
+      };
+      const map = new kakao.maps.Map(container, options);
+
+      const markerPosition = new kakao.maps.LatLng(37.530, 127.123);
+      const marker = new kakao.maps.Marker({ position: markerPosition });
+      marker.setMap(map);
     }
 
     async function copyText(text) {
@@ -542,6 +556,10 @@
       if (diffX > 0) prevImage();
       else nextImage();
     }, { passive: true });
+
+    window.onload = function() {
+      initMap();
+    };
   </script>
 </body>
 </html>
